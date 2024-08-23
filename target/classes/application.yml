@@ -1,0 +1,50 @@
+config:
+  aws:
+    region: us-east-1
+    dynamodb:
+      url: http://127.0.0.1:4566
+      access-key: localstack
+      secret-key: localstack
+    sqs:
+      url: http://127.0.0.1:4566
+      access-key: localstack
+      secret-key: localstack
+      queue-name: http://sqs.us-east-1.localhost.localstack.cloud:4566/000000000000/order-info
+product:
+  service:
+    endpoint: http://localhost:9500
+server:
+  port: 9600
+spring:
+  application:
+    name: ecom-order-service
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+  server:
+    port: 8082
+resilience4j:
+  circuitbreaker:
+    instances:
+      userService:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
